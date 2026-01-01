@@ -1,0 +1,387 @@
+-- StellarHub UI Documentation
+-- the example is based on linorialib
+-- So if something is missing here, look at the linorialib example. Normally it will work too,
+-- because almost everything is based on linorialib, so big credit to violin-suzutsuki.
+-- it won't be open source because there are some config obfuscation option in the menu, so if it's open source,
+-- there's no point in including them, i'll maybe try to find a solution later for open source
+-- If you have any changes to make / bugs / add, please come to discord : /kqKdsN9hDP
+
+local StellarHubMenu = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotFatBitch/uimenu/main/StellarhubMenu"))()
+local Settings = loadstring(game:HttpGet("https://raw.githubusercontent.com/ImNotFatBitch/uimenu/main/StellarhubSettings"))()
+
+local Window = StellarHubMenu:Create({
+    Title = 'TestTitle',                    -- Window title
+    Size = UDim2.new(0, 700, 0, 550),       -- Window size (default: 700x550) (Not recommended, may break things)
+    Position = UDim2.new(0.5, 0, 0.5, 0),   -- Window position (default: center)
+    ShowOnCreate = true,                    -- Show menu immediately (default: true)
+    PerformanceMode = false,                -- Disable animations and some stuff (can be edited in the settings tab)
+    TweenSpeed = 0.3,                       -- Animation speed in seconds (can be edited in the settings tab)
+    UnloadTotal = true,                     -- disable ALL toggle etc before unload (default: true)
+ 
+    -- PlayerList options
+    PlayerListEnabled = true,               -- hides PlayerList toggle and set it on false
+ 
+    -- Watermark options
+    WatermarkEnabled = true,                -- hides entire Watermark section and disables watermark
+    WatermarkText = 'MyScript',             -- Custom watermark Title
+    CanChangeTitleWatermark = false,        -- hides textbox, players can't change title
+    ObfuscateConfig = false,                -- obfuscate the config file
+})
+ 
+-- Or use defaults (empty config all on default)
+-- local Window = StellarHubMenu:Create()
+
+local Tabs = {
+    Main = Window:AddTab('Main'),
+}
+
+-- Initialize Settings tab
+-- Format: Settings:InitializeSettingsTab(Window, 'FolderName', 'GameName')
+local SettingsSections = Settings:InitializeSettingsTab(Window, 'MyScriptHub', 'ExampleScript')
+ 
+--[[
+    InitializeSettingsTab creates a Settings tab with:
+    - Config System, Theme System, Watermark, Keybind List etc
+ 
+    Config path examples:
+    - workspace/MyScriptHub/ExampleScript/settings/
+]]
+
+-- Groupbox and Tabbox inherit the same functions
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('Groupbox')
+
+--[[
+    Groupbox:AddToggle
+    Arguments: Index, Options
+
+    Options: {
+        Text = string,
+        Default = boolean,
+        Tooltip = string,
+    }
+]]
+-- Groupbox:AddToggle
+-- Arguments: Index, Options
+LeftGroupBox:AddToggle('MyToggle', {
+    Text = 'This is a toggle',
+    Default = true,
+    Tooltip = 'This is a tooltip',
+
+    Callback = function(Value)
+        print('[cb] MyToggle changed to:', Value)
+    end
+})
+
+-- Toggles is a table added to getgenv() by the library
+-- You index Toggles with the specified index, in this case 'MyToggle'
+Toggles.MyToggle:OnChanged(function()
+    print('MyToggle changed to:', Toggles.MyToggle.Value)
+end)
+
+Toggles.MyToggle:SetValue(false)
+
+--[[
+    Groupbox:AddButton
+    Arguments: Options
+
+    Options: {
+        Text = string,
+        Callback = function(),
+        DoubleClick = boolean,
+        Tooltip = string
+    }
+]]
+-- Groupbox:AddButton
+-- Arguments: Options table
+LeftGroupBox:AddButton({
+    Text = 'Button',
+    Callback = function()
+        print('You clicked a button!')
+    end,
+    DoubleClick = false,
+    Tooltip = 'this is a tooltip'
+})
+
+LeftGroupBox:AddButton({
+    Text = 'Double Click Button',
+    Callback = function()
+        print('You double clicked!')
+    end,
+    DoubleClick = true,
+    Tooltip = 'Double click me!'
+})
+
+--[[
+    Groupbox:AddLabel
+    Arguments: Text, DoesWrap
+
+    Options: {
+        Text = string,
+        DoesWrap = boolean -- text wraps to next line
+    }
+]]
+-- Groupbox:AddLabel
+-- Arguments: Text, DoesWrap
+LeftGroupBox:AddLabel('This is a label')
+LeftGroupBox:AddLabel('This is a label\nwhich wraps its text!', true)
+
+--[[
+    Groupbox:AddDivider
+    Arguments: Options (optional)
+
+    Options: {
+        Text = string, -- Optional section title
+        Alignment = string, -- "Left", "Center", "Right"
+        Thickness = number -- Thickness in pixels
+    }
+]]
+-- Groupbox:AddDivider
+-- Arguments: Options (optional)
+LeftGroupBox:AddDivider()
+LeftGroupBox:AddDivider({
+    Text = "Section Title",
+    Alignment = "Center",
+    Thickness = 1
+})
+
+--[[
+    Groupbox:AddSlider
+    Arguments: Index, Options
+
+    Options: {
+        Text = string,
+        Default = number,
+        Min = number,
+        Max = number,
+        Rounding = number,
+        Suffix = string,
+        Compact = boolean, -- hides title label and shows value in slider bar
+        HideMax = boolean -- hides max value
+    }
+]]
+LeftGroupBox:AddSlider('MySlider', {
+    Text = 'This is my slider!',
+    Default = 0,
+    Min = 0,
+    Max = 5,
+    Rounding = 1,
+    Suffix = '',
+    Compact = false,
+
+    Callback = function(Value)
+        print('[cb] MySlider changed! New value:', Value)
+    end
+})
+
+-- Options is a table added to getgenv() by the library
+Options.MySlider:OnChanged(function()
+    print('MySlider was changed! New value:', Options.MySlider.Value)
+end)
+
+Options.MySlider:SetValue(3)
+
+--[[
+    Groupbox:AddInput
+    Arguments: Index, Options
+
+    Options: {
+        Text = string,
+        Default = string,
+        Placeholder = string,
+        Numeric = boolean, -- only allows numbers
+        Finished = boolean, -- calls callback only when enter is pressed
+        Tooltip = string,
+        Callback = function(Value)
+    }
+]]
+-- Groupbox:AddInput
+-- Arguments: Index, Options
+LeftGroupBox:AddInput('MyTextbox', {
+    Default = 'My textbox!',
+    Numeric = false,
+    Finished = false,
+    Text = 'This is a textbox',
+    Tooltip = 'This is a tooltip',
+    Placeholder = 'Placeholder text',
+
+    Callback = function(Value)
+        print('[cb] Text updated. New text:', Value)
+    end
+})
+
+Options.MyTextbox:OnChanged(function()
+    print('Text updated. New text:', Options.MyTextbox.Value)
+end)
+
+--[[
+    Groupbox:AddDropdown
+    Arguments: Index, Options
+
+    Options: {
+        Text = string,
+        Values = table, -- Array of strings
+        Default = number or string, -- Index or Value
+        Multi = boolean, -- allows multiple selections
+        Tooltip = string,
+    }
+]]
+-- Groupbox:AddDropdown
+-- Arguments: Index, Options
+LeftGroupBox:AddDropdown('MyDropdown', {
+    Values = { 'This', 'is', 'a', 'dropdown' },
+    Default = 1,
+    Multi = false,
+    Text = 'A dropdown',
+    Tooltip = 'This is a tooltip',
+
+    Callback = function(Value)
+        print('[cb] Dropdown changed. New value:', Value)
+    end
+})
+
+Options.MyDropdown:OnChanged(function()
+    print('Dropdown got changed. New value:', Options.MyDropdown.Value)
+end)
+
+Options.MyDropdown:SetValue('This')
+
+-- Multi dropdowns
+LeftGroupBox:AddDropdown('MyMultiDropdown', {
+    Values = { 'This', 'is', 'a', 'dropdown' },
+    Default = 1,
+    Multi = true,
+    Text = 'A multi dropdown',
+    Tooltip = 'this is a tooltip',
+
+    Callback = function(Value)
+        print('[cb] Multi dropdown changed:', Value)
+    end
+})
+
+Options.MyMultiDropdown:OnChanged(function()
+    print('Multi dropdown changed:')
+    for key, value in next, Options.MyMultiDropdown.Value do
+        print(key, value)
+    end
+end)
+
+--[[
+    Label:AddColorPicker
+    Arguments: Index, Options
+
+    Options: {
+        Title = string,             -- Picker window title
+        Transparency = number,      -- 0-1, enables transparency slider with this default value
+    }
+]]
+-- Label:AddColorPicker
+-- Arguments: Index, Options
+LeftGroupBox:AddLabel('ColorPicker'):AddColorPicker('ColorPicker', {
+    Default = Color3.fromRGB(0, 255, 0),
+    Title = 'Some color',
+    Transparency = 0.5,
+
+    Callback = function(Value)
+        print('[cb] Color changed!', Value)
+    end
+})
+
+Options.ColorPicker:OnChanged(function()
+    print('Color changed!', Options.ColorPicker.Value)
+    print('Transparency changed!', Options.ColorPicker.Transparency)
+end)
+
+Options.ColorPicker:SetValueRGB(Color3.fromRGB(0, 255, 0))
+
+--[[
+    Groupbox:AddKeybind
+    Arguments: Index, Options
+
+    Options: {
+        Title = string,
+        Default = Enum.KeyCode or string,
+        Mode = string, -- "Always", "Toggle", "Hold"
+    }
+]]
+
+LeftGroupBox:AddKeybind('KeyBind', {
+    Default = 'MB2',
+    Mode = 'Toggle',
+    Title = 'Keybind Label',
+
+    Callback = function(Value)
+        print('[cb] Keybind activated!', Value)
+    end,
+
+    ChangedCallback = function(New)
+        print('[cb] Keybind changed to:', New)
+    end
+})
+
+Options.KeyBind:OnChanged(function()
+    print('Keybind changed!', Options.KeyBind.Value)
+end)
+
+-- Check if keybind is being held (for 'Hold' mode)
+-- local isHeld = Options.KeyBind:GetState()
+
+-- Toggle with ColorPicker and Keybind
+LeftGroupBox:AddToggle('FeatureToggle', {
+    Text = 'Toggle kc',
+    Default = false
+}):AddColorPicker('FeatureColor', {
+    Default = Color3.fromRGB(255, 0, 0),
+    Transparency = 0.5,
+    Title = 'Feature color',
+}):AddKeybind('FeatureKey', {
+    Default = 'E',
+    Mode = 'Toggle',
+    Title = 'Feature keybind'
+})
+
+-- Tabbox (MultiGroupbox)
+local TabBox = Tabs.Main:AddMultiGroupbox('Mid')
+local Tab1 = TabBox:AddGroupBox('Tab 1')
+Tab1:AddToggle('Tab1Toggle', { Text = 'Tab1 Toggle' })
+local Tab2 = TabBox:AddGroupBox('Tab 2')
+Tab2:AddToggle('Tab2Toggle', { Text = 'Tab2 Toggle' })
+
+-- Dependency box
+local RightGroupbox = Tabs.Main:AddRightGroupbox('Groupbox 3')
+RightGroupbox:AddToggle('Togglesubsop', { Text = 'Show sub-options' })
+
+local Depbox = RightGroupbox:AddDependencyBox()
+Depbox:AddToggle('DepboxToggle', { Text = 'Sub toggle' })
+Depbox:AddSlider('DepboxSlider', { Text = 'Slider', Default = 50, Min = 0, Max = 100, Rounding = 0 })
+Depbox:AddDropdown('DepboxDropdown', { Text = 'Dropdown', Default = 1, Values = {'a', 'b', 'c'} })
+
+Depbox:SetupDependencies({
+    { Toggles.Togglesubsop, true }
+})
+
+-- Player List
+-- Access player priority/ignore lists via Settings.PlayersList
+local function isPlayerPrioritized(player)
+    return Settings.PlayersList.Prioritize[player.UserId] == true
+end
+
+local function isPlayerIgnored(player)
+    return Settings.PlayersList.Ignore[player.UserId] == true
+end
+
+-- Notifications
+Settings:Notify('StellarHub Example Loaded!', 5)
+
+
+-- Theme Colors Access
+-- You can access the current theme colors using Settings.ThemeColors:
+-- Settings.ThemeColors.Background
+-- Settings.ThemeColors.Border
+-- Settings.ThemeColors.Text
+-- Settings.ThemeColors.Header
+-- Settings.ThemeColors.Button
+
+-- Unload callback
+Settings:OnUnload(function()
+    print('Script unloaded!')
+end)
