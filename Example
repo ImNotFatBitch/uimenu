@@ -26,6 +26,7 @@ local Window = StellarHubMenu:Create({
     WatermarkText = 'MyScript',             -- Custom watermark Title
     CanChangeTitleWatermark = false,        -- hides textbox, players can't change title
     ObfuscateConfig = false,                -- obfuscate the config file
+    MobileLogo = 'rbxassetid://14768967526',-- Mobile Logo Button
 })
  
 -- Or use defaults (empty config all on default)
